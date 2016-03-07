@@ -1,0 +1,19 @@
+{
+  "name": "guard-rspec",
+  "main": "./lib/guard-rspec",
+  "version": "0.0.1",
+  "description": "Run Guard in the background and be told about failures.",
+  "keywords": [
+  ],
+  "activationCommands": {
+    "atom-workspace": "guard-rspec:toggle"
+  },
+  "repository": "https://github.com/atom/guard-rspec",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+    "atom-message-panel": "^1.2.4"
+  }
+}
