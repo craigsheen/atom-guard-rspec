@@ -1,7 +1,7 @@
 {
   "name": "guard-rspec",
   "main": "./lib/guard-rspec",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run Guard in the background and be told about failures.",
   "keywords": [],
   "activationCommands": {
