@@ -1,12 +1,13 @@
 class OutputHelper
-  constructor: (@data, @footerOutput)->
+  constructor: (@data, @footerStatus, @footerPanel)->
     @errors = []
+    @formattedErrors = []
 
   check: ->
-    formatted_output = this.parseData()
-    if /Finished in/i.test(formatted_output)
-      if /Failed examples:/i.test(formatted_output)
-        this.gatherErrors(formatted_output)
+    formattedOutput = this.parseData()
+    if /Finished in/i.test(formattedOutput)
+      if /Failed examples:/i.test(formattedOutput)
+        this.gatherErrors(formattedOutput)
       else
         this.setAsPassed()
 
@@ -15,16 +16,40 @@ class OutputHelper
 
   gatherErrors: (output) ->
     @errors = output.match(/rspec .*/g)
-    errorMessage = @errors.length + ' Error(s) found!'
-    errorList = @errors.join('<br />')
-    @footerOutput.setText(errorMessage)
-    @footerOutput.addClass('guard-rspec-output-error')
-    @footerOutput.addHover(errorList)
+    @formattedErrors = @errors.map((error, i) =>
+      return this.formatError error
+    )
+
+    this.setFailedFooterStatus()
+    this.setFailedFooterPanel()
+
+  formatError: (error) ->
+    err = {}
+    err['file'] = error.match(/\.\/[a-z\/\.\_]*/)[0]
+    err['line'] = error.match(/rb:([0-9]+)/)[1]
+    err['message'] = error.match(/#(.*)/)[1]
+    return err
 
   setAsPassed: ->
-    @footerOutput.setText('No Errors')
-    @footerOutput.removeClass('guard-rspec-output-error')
-    @footerOutput.addClass('guard-rspec-output-success')
-    @footerOutput.removeHover()
+    this.setPassedFooterStatus()
+    this.resetFooterPanel()
+
+  setFailedFooterStatus: ->
+    errorMessage = @errors.length + ' Error(s) found!'
+    errorList = @errors.join('<br />')
+    @footerStatus.setText(errorMessage)
+    @footerStatus.addClass('guard-rspec-output-error')
+
+  setPassedFooterStatus: ->
+    @footerStatus.setText('No Errors')
+    @footerStatus.removeClass('guard-rspec-output-error')
+    @footerStatus.addClass('guard-rspec-output-success')
+
+  setFailedFooterPanel: ->
+    @footerPanel.clear()
+    @footerPanel.addErrors(@formattedErrors)
+
+  resetFooterPanel: ->
+    @footerPanel.reset()
 
 module.exports = OutputHelper

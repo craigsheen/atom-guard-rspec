@@ -1,25 +1,25 @@
 ChildProcess  = require 'child_process'
 OutputHelper = require './output-helper'
 StatusMessage = require './status-message'
+GuardRspecOutput = require './guard-rspec-output'
 
 module.exports =
 class GuardRspecView
   constructor: (serializedState) ->
-    @footerOutput = new StatusMessage('Starting Guard..')
+    @footerPanel = new GuardRspecOutput()
+    @footerStatus = new StatusMessage()
 
     spawn = ChildProcess.spawn
 
     terminal = spawn("bash", ["-l"])
 
-    # TODO: Change this back.
-    # projectPath = atom.project.getPaths()[0]
-    projectPath = "/Users/craigsheen/development/bellroy"
+    projectPath = atom.project.getPaths()[0]
     command = "guard"
 
     terminal.stdout.on 'data', @handleOutput
     terminal.stdin.write("cd #{projectPath} && #{command}\n")
 
-    @footerOutput.setText('Watching...')
+    @footerStatus.setText('Watching...')
 
   # Returns an object that can be retrieved when package is activated
   serialize: ->
@@ -27,8 +27,6 @@ class GuardRspecView
   # Tear down any state and detach
   destroy: ->
 
-  getElement: ->
-
   handleOutput: (data) =>
-    output_helper = new OutputHelper(data, @footerOutput)
-    output_helper.check()
+    outputHelper = new OutputHelper(data, @footerStatus, @footerPanel)
+    outputHelper.check()

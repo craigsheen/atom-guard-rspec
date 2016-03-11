@@ -1,5 +1,6 @@
 OutputHelper = require '../lib/output-helper'
 StatusMessage = require '../lib/status-message'
+GuardRspecOutput = require '../lib/guard-rspec-output'
 
 describe 'OutputHelper', ->
   [outputHelper, statusBar] = []
@@ -16,18 +17,21 @@ describe 'OutputHelper', ->
     runs ->
       statusBar = document.querySelector 'status-bar'
 
-  it 'sets the data variable and footerOutput', ->
+  it 'sets the data variable, footerStatus and footerPanel', ->
     statusMessage = new StatusMessage('message')
-    outputHelper = new OutputHelper(passingData, statusMessage)
+    guardRspecOutput = new GuardRspecOutput()
+    outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
 
     expect(outputHelper.data).toEqual(passingData)
-    expect(outputHelper.footerOutput).toBe(statusMessage)
+    expect(outputHelper.footerStatus).toBe(statusMessage)
+    expect(outputHelper.footerPanel).toBe(guardRspecOutput)
 
   describe '#check', ->
     describe 'no failing specs', ->
       it 'should call the setAsPassed method', ->
         statusMessage = new StatusMessage('message')
-        outputHelper = new OutputHelper(passingData, statusMessage)
+        guardRspecOutput = new GuardRspecOutput()
+        outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
 
         spyOn(outputHelper, 'setAsPassed')
 
@@ -38,43 +42,59 @@ describe 'OutputHelper', ->
     describe 'with failing specs', ->
       it 'should call the gatherErrors method', ->
         statusMessage = new StatusMessage('message')
-        outputHelper = new OutputHelper(failingData, statusMessage)
+        guardRspecOutput = new GuardRspecOutput()
+        outputHelper = new OutputHelper(failingData, statusMessage, guardRspecOutput)
 
         spyOn(outputHelper, 'gatherErrors')
+        spyOn(outputHelper, 'setFailedFooterStatus')
+        spyOn(outputHelper, 'setFailedFooterPanel')
 
         outputHelper.check()
 
         expect(outputHelper.gatherErrors).toHaveBeenCalled()
+        expect(outputHelper.setFailedFooterStatus).toHaveBeenCalled()
+        expect(outputHelper.setFailedFooterPanel).toHaveBeenCalled()
 
   describe '#parseData', ->
     it 'should convert the data to a string', ->
       statusMessage = new StatusMessage('message')
-      outputHelper = new OutputHelper(passingData, statusMessage)
+      guardRspecOutput = new GuardRspecOutput()
+      outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
 
       expect(outputHelper.parseData()).toEqual("[0G[1] guard(main)> ")
 
   describe '#gatherErrors', ->
-    it 'sets errors', ->
+    it 'sets errors and formatted errors', ->
       statusMessage = new StatusMessage('message')
-      outputHelper = new OutputHelper(failingData, statusMessage)
+      guardRspecOutput = new GuardRspecOutput()
+      outputHelper = new OutputHelper(failingData, statusMessage, guardRspecOutput)
 
       outputHelper.gatherErrors()
 
       expect(outputHelper.errors).toEqual(['rspec ./spec/models/test_spec.rb:2 # true should equal false'])
+      expect(outputHelper.formattedErrors).toEqual([{'file': 'rspec ./spec/models/test_spec.rb', 'line': '2', 'message': 'true should equal false'}])
 
     it 'should set status message text', ->
       statusMessage = new StatusMessage('message')
-      outputHelper = new OutputHelper(failingData, statusMessage)
+      guardRspecOutput = new GuardRspecOutput()
+      outputHelper = new OutputHelper(failingData, statusMessage, guardRspecOutput)
+
+      spyOn(guardRspecOutput, 'addErrors')
 
       outputHelper.gatherErrors()
 
       expect(statusMessage.item.innerHTML).toEqual('1 Error(s) found!')
+      expect(guardRspecOutput.addErrors).toHaveBeenCalled()
 
   describe '#setAsPassed', ->
     it 'should set status message text', ->
       statusMessage = new StatusMessage('message')
-      outputHelper = new OutputHelper(passingData, statusMessage)
+      guardRspecOutput = new GuardRspecOutput()
+      outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
+
+      spyOn(guardRspecOutput, 'reset')
 
       outputHelper.setAsPassed()
 
       expect(statusMessage.item.innerHTML).toEqual('No Errors')
+      expect(guardRspecOutput.reset).toHaveBeenCalled()

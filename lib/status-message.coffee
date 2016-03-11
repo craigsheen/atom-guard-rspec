@@ -26,9 +26,3 @@ class StatusMessage
 
   removeClass: (className) ->
     @item.classList.remove(className)
-
-  addHover: (text = []) ->
-    @errorTooltip = atom.tooltips.add(@item, { title: text }) if text?
-
-  removeHover: ->
-    @errorTooltip.dispose()
