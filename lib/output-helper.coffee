@@ -5,6 +5,8 @@ class OutputHelper
 
   check: ->
     formattedOutput = this.parseData()
+    if /\[0G/i.test(formattedOutput)
+      this.setAsRunning()
     if /Finished in/i.test(formattedOutput)
       if /Failed examples:/i.test(formattedOutput)
         this.gatherErrors(formattedOutput)
@@ -30,6 +32,10 @@ class OutputHelper
     err['message'] = error.match(/#(.*)/)[1]
     return err
 
+  setAsRunning: ->
+    @footerStatus.setText('Running')
+    @footerStatus.removeClasses()
+
   setAsPassed: ->
     this.setPassedFooterStatus()
     this.resetFooterPanel()
@@ -38,6 +44,7 @@ class OutputHelper
     errorMessage = @errors.length + ' Error(s) found!'
     errorList = @errors.join('<br />')
     @footerStatus.setText(errorMessage)
+    @footerStatus.removeClass('guard-rspec-output-success')
     @footerStatus.addClass('guard-rspec-output-error')
 
   setPassedFooterStatus: ->

@@ -26,3 +26,7 @@ class StatusMessage
 
   removeClass: (className) ->
     @item.classList.remove(className)
+
+  removeClasses: ->
+    @item.classList.remove('guard-rspec-output-success')
+    @item.classList.remove('guard-rspec-output-error')
