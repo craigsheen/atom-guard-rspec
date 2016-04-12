@@ -14,8 +14,7 @@ class GuardRspecView
 
     terminal = spawn("bash", ["-l"])
 
-    # projectPath = atom.project.getPaths()[0]
-    projectPath = '/Users/craigsheen/development/bellroy'
+    projectPath = atom.project.getPaths()[0]
     command = "guard"
 
     terminal.stdout.on 'data', @handleOutput

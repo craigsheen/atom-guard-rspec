@@ -6,7 +6,6 @@ class OutputHelper
 
   check: (@data) ->
     formattedOutput = this.parseData()
-    console.log formattedOutput
     if /Finished in/i.test(formattedOutput)
       @guardComplete = true
       if /Failed examples:/i.test(formattedOutput)
