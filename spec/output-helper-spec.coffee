@@ -17,12 +17,11 @@ describe 'OutputHelper', ->
     runs ->
       statusBar = document.querySelector 'status-bar'
 
-  it 'sets the data variable, footerStatus and footerPanel', ->
+  it 'sets the footerStatus and footerPanel', ->
     statusMessage = new StatusMessage('message')
     guardRspecOutput = new GuardRspecOutput()
-    outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
+    outputHelper = new OutputHelper(statusMessage, guardRspecOutput)
 
-    expect(outputHelper.data).toEqual(passingData)
     expect(outputHelper.footerStatus).toBe(statusMessage)
     expect(outputHelper.footerPanel).toBe(guardRspecOutput)
 
@@ -31,11 +30,11 @@ describe 'OutputHelper', ->
       it 'should call the setAsPassed method', ->
         statusMessage = new StatusMessage('message')
         guardRspecOutput = new GuardRspecOutput()
-        outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
+        outputHelper = new OutputHelper(statusMessage, guardRspecOutput)
 
         spyOn(outputHelper, 'setAsPassed')
 
-        outputHelper.check()
+        outputHelper.check(passingData)
 
         expect(outputHelper.setAsPassed).toHaveBeenCalled()
 
@@ -43,13 +42,13 @@ describe 'OutputHelper', ->
       it 'should call the gatherErrors method', ->
         statusMessage = new StatusMessage('message')
         guardRspecOutput = new GuardRspecOutput()
-        outputHelper = new OutputHelper(failingData, statusMessage, guardRspecOutput)
+        outputHelper = new OutputHelper(statusMessage, guardRspecOutput)
 
         spyOn(outputHelper, 'gatherErrors')
         spyOn(outputHelper, 'setFailedFooterStatus')
         spyOn(outputHelper, 'setFailedFooterPanel')
 
-        outputHelper.check()
+        outputHelper.check(failingData)
 
         expect(outputHelper.gatherErrors).toHaveBeenCalled()
         expect(outputHelper.setFailedFooterStatus).toHaveBeenCalled()
@@ -59,7 +58,9 @@ describe 'OutputHelper', ->
     it 'should convert the data to a string', ->
       statusMessage = new StatusMessage('message')
       guardRspecOutput = new GuardRspecOutput()
-      outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
+      outputHelper = new OutputHelper(statusMessage, guardRspecOutput)
+
+      outputHelper.check(passingData)
 
       expect(outputHelper.parseData()).toEqual("[0G[1] guard(main)> ")
 
@@ -67,7 +68,9 @@ describe 'OutputHelper', ->
     it 'sets errors and formatted errors', ->
       statusMessage = new StatusMessage('message')
       guardRspecOutput = new GuardRspecOutput()
-      outputHelper = new OutputHelper(failingData, statusMessage, guardRspecOutput)
+      outputHelper = new OutputHelper(statusMessage, guardRspecOutput)
+
+      outputHelper.check(failingData)
 
       outputHelper.gatherErrors()
 
@@ -77,7 +80,9 @@ describe 'OutputHelper', ->
     it 'should set status message text', ->
       statusMessage = new StatusMessage('message')
       guardRspecOutput = new GuardRspecOutput()
-      outputHelper = new OutputHelper(failingData, statusMessage, guardRspecOutput)
+      outputHelper = new OutputHelper(statusMessage, guardRspecOutput)
+
+      outputHelper.check(failingData)
 
       spyOn(guardRspecOutput, 'addErrors')
 
@@ -90,7 +95,9 @@ describe 'OutputHelper', ->
     it 'should set status message text', ->
       statusMessage = new StatusMessage('message')
       guardRspecOutput = new GuardRspecOutput()
-      outputHelper = new OutputHelper(passingData, statusMessage, guardRspecOutput)
+      outputHelper = new OutputHelper(statusMessage, guardRspecOutput)
+
+      outputHelper.check(passingData)
 
       spyOn(guardRspecOutput, 'reset')
 

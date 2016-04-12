@@ -1,17 +1,25 @@
 class OutputHelper
-  constructor: (@data, @footerStatus, @footerPanel)->
+  constructor: (@footerStatus, @footerPanel)->
     @errors = []
     @formattedErrors = []
+    @guardComplete = false
 
-  check: ->
+  check: (@data) ->
     formattedOutput = this.parseData()
-    if /\[0G/i.test(formattedOutput)
-      this.setAsRunning()
+    console.log formattedOutput
     if /Finished in/i.test(formattedOutput)
+      @guardComplete = true
       if /Failed examples:/i.test(formattedOutput)
         this.gatherErrors(formattedOutput)
       else
         this.setAsPassed()
+    else if /guard\(main\)/i.test(formattedOutput)
+      # End reached - set the complete to false so we can start again.
+      @guardComplete = false
+    else if @guardComplete
+      # Do nothing - we have the errors but guard has not finished running.
+    else
+      this.setAsRunning()
 
   parseData: ->
     String.fromCharCode.apply(null, @data)
@@ -28,7 +36,11 @@ class OutputHelper
   formatError: (error) ->
     err = {}
     err['file'] = error.match(/\.\/[a-z\/\.\_]*/)[0]
-    err['line'] = error.match(/rb:([0-9]+)/)[1]
+    line = error.match(/rb:([0-9]+)/)
+    if line
+      err['line'] = line[1]
+    else
+      err['line'] = ''
     err['message'] = error.match(/#(.*)/)[1]
     return err
 

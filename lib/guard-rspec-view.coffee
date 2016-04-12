@@ -8,12 +8,14 @@ class GuardRspecView
   constructor: (serializedState) ->
     @footerPanel = new GuardRspecOutput()
     @footerStatus = new StatusMessage()
+    @outputHelper = new OutputHelper(@footerStatus, @footerPanel)
 
     spawn = ChildProcess.spawn
 
     terminal = spawn("bash", ["-l"])
 
-    projectPath = atom.project.getPaths()[0]
+    # projectPath = atom.project.getPaths()[0]
+    projectPath = '/Users/craigsheen/development/bellroy'
     command = "guard"
 
     terminal.stdout.on 'data', @handleOutput
@@ -28,5 +30,4 @@ class GuardRspecView
   destroy: ->
 
   handleOutput: (data) =>
-    outputHelper = new OutputHelper(data, @footerStatus, @footerPanel)
-    outputHelper.check()
+    @outputHelper.check(data)
