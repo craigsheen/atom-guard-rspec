@@ -6,6 +6,9 @@ class OutputHelper
 
   check: (@data) ->
     formattedOutput = this.parseData()
+    if /\[RSpec results\] Failed/i.test(formattedOutput)
+      @guardComplete = true
+      this.setCodeFailure()
     if /Finished in/i.test(formattedOutput)
       @guardComplete = true
       if /Failed examples:/i.test(formattedOutput)
@@ -50,6 +53,11 @@ class OutputHelper
   setAsPassed: ->
     this.setPassedFooterStatus()
     this.resetFooterPanel()
+
+  setCodeFailure: ->
+    @footerStatus.setText('Failed to run')
+    @footerStatus.removeClass('guard-rspec-output-success')
+    @footerStatus.addClass('guard-rspec-output-error')
 
   setFailedFooterStatus: ->
     errorMessage = @errors.length + ' Error(s) found!'
