@@ -43,7 +43,7 @@ class OutputHelper
       err['line'] = line[1]
     else
       err['line'] = ''
-    err['message'] = error.match(/#(.*)/)[1]
+    err['message'] = error.match(/#\s(.*)/)[1]
     return err
 
   setAsRunning: ->
