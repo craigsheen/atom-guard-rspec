@@ -37,7 +37,7 @@ class OutputHelper
 
   formatError: (error) ->
     err = {}
-    err['file'] = error.match(/\.\/[a-z\/\.\_]*/)[0]
+    err['file'] = error.match(/\.\/[a-z0-9\/\.\_]*/)[0]
     line = error.match(/rb:([0-9]+)/)
     if line
       err['line'] = line[1]
