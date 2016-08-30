@@ -1,7 +1,9 @@
 GuardRspecView = require './guard-rspec-view'
 {CompositeDisposable} = require 'atom'
+settings = require './settings'
 
 module.exports = GuardRspec =
+  config: settings
   guardRspecView: null
   modalPanel: null
   subscriptions: null

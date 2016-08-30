@@ -15,7 +15,7 @@ class GuardRspecView
     terminal = spawn("bash", ["-l"])
 
     projectPath = atom.project.getPaths()[0]
-    command = "guard"
+    command = atom.config.get('guard-rspec.command')
 
     terminal.stdout.on 'data', @handleOutput
     terminal.stdin.write("cd #{projectPath} && #{command}\n")
